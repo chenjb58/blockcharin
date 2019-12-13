@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>blockchain</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+</head>
+<body>
+  <div id="watch-example">
+    <p>简易界面</p>
+  <div>
+    <h4>注册账户</h4>
+    <p>新账户名(公司名):<input type="text" placeholder="请输入账户名" v-model="d1"/></p>
+    <input type="button" value="提交" @click="registerCompany"/>
+    <div>你的账户ID:{{msg1}}</div>
+  </div>
+  
+  <div>
+    <h4>输入账户ID返回公司名称</h4>
+    <p>账户ID:<input type="text" placeholder="请输入账户ID" v-model="d2"/></p>
+    <input type="button" value="提交" @click="getCompanyName"/>
+    <br></br>
+    <div>{{msg2}}</div>
+  </div>
+  
+  <div>
+    <h4>核心企业签发应收账款</h4>
+    <p>对方账户ID:<input type="text" placeholder="请输入对方账户ID" v-model="d3_1"/></p>
+    <p>收据金额:<input type="text" placeholder="请输入金额" v-model="d3_2"/></p>
+    <p>收据结算期限:<input type="text" placeholder="请输入期限" v-model="d3_3"/></p>
+    
+    <input type="button" value="提交" @click="signReciept"/>
+    <br></br>
+    <div>{{msg3}}</div>
+  </div>
+  
+  <div>
+    <h4>下游企业向银行融资</h4>
+    <p>账户ID:<input type="text" placeholder="请输入账户ID" v-model="d4_1"/></p>
+    <p>融资金额:<input type="text" placeholder="请输入融资金额" v-model="d4_2"/></p>
+    <input type="button" value="提交" @click="askFinance"/>
+    <div>{{msg4}}</div>
+  </div>
+  
+  <div>
+    <h4>下游企业债券转让</h4>
+    <p>你的账户ID:<input type="text" placeholder="请输入你的账户ID" v-model="d5_1"/></p>
+    <p>对方的账户ID:<input type="text" placeholder="请输入对方的账户ID" v-model="d5_2"/></p>
+    <p>转让金额:<input type="text" placeholder="请输入金额" v-model="d5_3"/></p>
+    <input type="button" value="提交" @click="transferOwned"/>
+    <div>{{msg5}}</div>
+  </div>
+  
+  <div>
+    <h4>下游企业确认到期债券已收到核心企业的付款</h4>
+    <p>账户ID:<input type="text" placeholder="请输入账户ID" v-model="d6"/></p>
+    <input type="button" value="提交" @click="ackCorePaid"/>
+    <div>{{msg6}}</div>
+  </div>
+  
+  <div>
+    <h4>银行确认下游企业偿还融资</h4>
+    <p>账户ID:<input type="text" placeholder="请输入下游企业账户ID" v-model="d7_1"/> </p>
+    <p>已偿还金额:<input type="text" placeholder="偿还金额" v-model="d7_2"/> </p>
+    <input type="button" value="提交" @click="payFinance"/>
+    <div>{{msg7}}</div>
+  </div>
+  </div>
+
+  <script>
+    var watchExampleVM = new Vue({
+      el: '#watch-example',
+      data: {
+        d1:'',
+        d2:'',
+        d3_1:'',
+        d3_2:'',
+        d3_3:'',
+        d4_1:'',
+        d4_2:'',
+        d5_1:'',
+        d5_2:'',
+        d5_3:'',
+        d6:'',
+        d7_1:'',
+        d7_2:'',
+        msg1:'',
+        msg2:'',
+        msg3:'',
+        msg4:'',
+        msg5:'',
+        msg6:'',
+        msg7:''
+      },
+      methods:{
+        registerCompany(){
+          axios.get('http://localhost:3000/api',{
+            params:{
+              type:1,
+              company_name: this.d1
+            }
+          }).then(res=>{
+              this.msg1 = res.data.result1;
+            }).catch(err=>{
+              this.msg1 = err;
+            });
+        },
+        getCompanyName(){
+          axios.get('http://localhost:3000/api',{
+            params:{
+              type:2,
+              cpnId: this.d2
+            }
+          }).then(res=>{
+            this.msg2 = res.data.result
+          }).catch(err=>{
+            this.msg2 = err;
+          });
+        },
+        signReciept(){
+      axios.get('http://localhost:3000/api',{
+        params:{
+          type:3,
+          toId: this.d3_1,
+          amount: this.d3_2,
+          max_time: this.d3_3
+        }
+      }).then(res=>{
+        this.msg3 = res.data.result;
+      }).catch(err=>{
+        this.msg3 = err;
+      });
+    },
+    askFinance(){   
+      axios.get('http://localhost:3000/api',{
+        params:{
+          type:4,
+          cpnId: this.d4_1,
+          amount: this.d4_2,
+        }
+      }).then(res=>{
+        this.msg4 = res.data.result1;
+      }).catch(err=>{
+        this.msg4 = err;
+      });
+    },
+    transferOwned(){
+      axios.get('http://localhost:3000/api',{
+        params:{
+          type:5,
+          fromId: this.d5_1,
+          toId: this.d5_2,
+          amount: this.d5_3,
+        }
+      }).then(res=>{
+        this.msg5 = res.data.result1;
+      }).catch(err=>{
+        this.msg5 = err;
+      });
+    },
+    ackCorePaid(){
+      axios.get('http://localhost:3000/api',{
+        params:{
+          type:6,
+          fromId:this.d6
+        }
+      }).then(res=>{
+        this.msg6 = res.data.result;
+      }).catch(err=>{
+        this.msg6 = err;
+      });
+    },
+    payFinance(){
+      axios.get('http://localhost:3000/api',{
+        params:{
+          type:7,
+          cpnId: this.d7_1,
+          amount: this.d7_2
+        }
+      }).then(res=>{
+        this.msg7 = res.data.result1;
+      }).catch(err=>{
+        this.msg7 = err;
+      });
+    }
+      }
+    })
+  </script>
+</body>
+</html>
